@@ -1,0 +1,26 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    box-sizing: border-box;
+    width: 100vw;
+    height: 100vh;
+    padding: 3vh;
+}
+
+.gameboard {
+    margin: 0 auto;
+    width: 25vw;
+    height: 25vw;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-gap: 5px;
+    background-color: black;
+}
+
+.gameboard div {
+    background-color: white;
+}
