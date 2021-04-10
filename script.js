@@ -1,17 +1,51 @@
 (function startApp() {
 
     const game = (function createGame() {
-        //check for winner, update turn status
-        // var whoseTurn = "player1";
+        function checkWinner() {
+            var board = gameBoard.getBoard();
 
-        // function getTurn() {
-        //     return whoseTurn;
-        // }
-        // function nextTurn() {
-        //     whoseTurn = (whoseTurn === "player1") ? "player2" : "player1";
-        // }
+            //check rows
+            for (let i = 0; i < board.length; i += 3) {
+                if (
+                    board[i] !== null &&
+                    board[i] === board[i + 1] &&
+                    board[i + 1] === board[i + 2]
+                ) {
+                    return true;
+                }
+            }
+            //check columns
+            for (let i = 0; i <= 3; i++) {
+                if (
+                    board[i] !== null &&
+                    board[i] === board[i + 3] &&
+                    board[i + 3] === board[i + 6]
+                ) {
+                    return true;
+                }
+            }
+            //check diagonals
+            if (
+                board[4] !== null &&
+                ((board[0] === board[4] && board[4] === board[8]) ||
+                (board[2] === board[4] && board[4] === board[6]))
+            ) {
+                return true;
+            }
+            
+            return false;
+        }
 
-        // return {getTurn, nextTurn};
+        function endGame(winner) {
+            var boardElem = document.querySelector(".gameboard");
+            boardElem.childNodes.forEach(function removeListener(cell) {
+                cell.removeEventListener("click", handleBoardClick);
+            });
+
+            console.log(winner.getName() + " won!");
+        }
+
+        return {checkWinner, endGame};
     })();
 
     const gameBoard = (function createGameboard() {
@@ -64,6 +98,10 @@
         if (gameBoard.placeMark(Number(cell.id), currPlayer.getMark())) {
             //update DOM board display
             cell.textContent = currPlayer.getMark();
+
+            if (game.checkWinner()) {
+                game.endGame(currPlayer);
+            }
 
             player1.changeTurn();
             player2.changeTurn();
