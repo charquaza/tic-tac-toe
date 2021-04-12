@@ -110,10 +110,12 @@
                 cell.removeEventListener("click", handleBoardClick);
             });
 
+            var display = document.querySelector(".controls");
+
             if (winner === null) {
-                console.log("It's a tie.");
+                display.textContent = "It's a tie.";
             } else {
-                console.log(winner.getName() + " won!");
+                display.textContent = `${winner.getName()} won!`;
             }
         }
 
