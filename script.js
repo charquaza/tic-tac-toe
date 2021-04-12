@@ -1,7 +1,70 @@
 (function startApp() {
 
     const game = (function createGame() {
-        function checkWinner() {
+        var player1;
+        var player2;
+        var numOfMovesMade = 0;
+
+        function setupGame() {
+            var boardElem = document.querySelector(".gameboard");
+    
+            for (let i = 0; i < 9; i++) {
+                let cellElem = document.createElement("div");
+                cellElem.id = i;
+                boardElem.appendChild(cellElem);
+            }
+    
+            var startGameBtn = document.querySelector("button.start-game");
+            startGameBtn.addEventListener("click", startGame);
+        }
+
+        function startGame() {
+            var player1Name = document.querySelector("#player1").value;
+            var player2Name = document.querySelector("#player2").value;
+    
+            var player1Mark = (document.querySelector("#o").checked) ? "O" : "X";
+            var player2Mark = (player1Mark === "O") ? "X" : "O";
+    
+            player1 = makePlayer(player1Name, player1Mark, true);
+            player2 = makePlayer(player2Name, player2Mark, false);
+    
+            var allInputElems = document.querySelectorAll(".players-container input");
+            allInputElems.forEach(function disableInput(inputElem) {
+                inputElem.setAttribute("disabled", "");
+            });
+    
+            //remove start button 
+            document.querySelector("div.controls").replaceChildren();
+
+            var boardCells = document.querySelectorAll(".gameboard div"); 
+            boardCells.forEach(function addListener(cell) {
+                cell.addEventListener("click", handleBoardClick);
+            });
+        }
+
+        function handleBoardClick(click) {
+            var cell = click.target;
+    
+            var currPlayer = (player1.getTurn()) ? player1 : player2;
+    
+            if (gameBoard.placeMark(Number(cell.id), currPlayer.getMark())) {
+                //update DOM board display
+                cell.textContent = currPlayer.getMark();
+    
+                game.checkWinner(currPlayer);
+    
+                player1.changeTurn();
+                player2.changeTurn();
+            }
+        }
+
+        function checkWinner(currPlayer) {
+            numOfMovesMade++;
+
+            if (numOfMovesMade < 5) {
+                return;
+            }
+
             var board = gameBoard.getBoard();
 
             //check rows
@@ -11,7 +74,8 @@
                     board[i] === board[i + 1] &&
                     board[i + 1] === board[i + 2]
                 ) {
-                    return true;
+                    game.endGame(currPlayer);
+                    return;
                 }
             }
             //check columns
@@ -21,7 +85,8 @@
                     board[i] === board[i + 3] &&
                     board[i + 3] === board[i + 6]
                 ) {
-                    return true;
+                    game.endGame(currPlayer);
+                    return;
                 }
             }
             //check diagonals
@@ -30,22 +95,29 @@
                 ((board[0] === board[4] && board[4] === board[8]) ||
                 (board[2] === board[4] && board[4] === board[6]))
             ) {
-                return true;
+                game.endGame(currPlayer);
+                return;
             }
-            
-            return false;
+            //check for tie
+            if (numOfMovesMade === 9) {
+                game.endGame(null);
+            }
         }
 
         function endGame(winner) {
-            var boardElem = document.querySelector(".gameboard");
-            boardElem.childNodes.forEach(function removeListener(cell) {
+            var boardCells = document.querySelectorAll(".gameboard div");
+            boardCells.forEach(function removeListener(cell) {
                 cell.removeEventListener("click", handleBoardClick);
             });
 
-            console.log(winner.getName() + " won!");
+            if (winner === null) {
+                console.log("It's a tie.");
+            } else {
+                console.log(winner.getName() + " won!");
+            }
         }
 
-        return {checkWinner, endGame};
+        return {setupGame, startGame, handleBoardClick, checkWinner, endGame};
     })();
 
     const gameBoard = (function createGameboard() {
@@ -70,7 +142,7 @@
     })();
 
     function makePlayer(nameInput, markInput, firstPlayer) {
-        const name = nameInput;
+        const name = nameInput || (firstPlayer ? "Player1" : "Player2");
         const mark = markInput;
         let myTurn = firstPlayer || false;
 
@@ -90,36 +162,7 @@
         return {getName, getMark, getTurn, changeTurn};
     }
 
-    function handleBoardClick(click) {
-        var cell = click.target;
-
-        var currPlayer = (player1.getTurn()) ? player1 : player2;
-
-        if (gameBoard.placeMark(Number(cell.id), currPlayer.getMark())) {
-            //update DOM board display
-            cell.textContent = currPlayer.getMark();
-
-            if (game.checkWinner()) {
-                game.endGame(currPlayer);
-            }
-
-            player1.changeTurn();
-            player2.changeTurn();
-        }
-    }
-
-
-    let player1 = makePlayer("first", "O", true);
-    let player2 = makePlayer("second", "X");
-
-    let boardElem = document.querySelector(".gameboard");
-
-    for (let i = 0; i < 9; i++) {
-        let cellElem = document.createElement("div");
-        cellElem.id = i;
-        cellElem.addEventListener("click", handleBoardClick);
-        boardElem.appendChild(cellElem);
-    }
+    game.setupGame();
 
 })();
 

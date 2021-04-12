@@ -13,6 +13,30 @@
         <script src="script.js" defer></script>
     </head>
     <body>
+        <div class="players-container">
+            <div class="player-1">
+                <h3>Player 1</h3>
+                <label for="player1">Name:</label>
+                <input type="text" id="player1" name="player1name">
+
+                <p>Select your mark:</p>
+                <input type="radio" id="o" name="mark" value="o" checked>
+                <label for="o">O</label>
+                <input type="radio" id="x" name="mark" value="x">
+                <label for="x">X</label>
+            </div>
+
+            <div class="player-2">
+                <h3>Player 2</h3>
+                <label for="player2">Name:</label>
+                <input type="text" id="player2" name="player2name">
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="start-game">Start Game</button>
+        </div>
+
         <div class="gameboard">
         </div>
     </body>
